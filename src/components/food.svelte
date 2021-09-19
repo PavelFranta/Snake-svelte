@@ -4,6 +4,6 @@
   
   <div
     style="top: {foodPosition.y}px; left: {foodPosition.x}px"
-    class="block w-6 h-6 absolute rounded-full bg-green-700"
+    class="block w-5 h-5 absolute rounded-full bg-green-700"
   >
   </div>

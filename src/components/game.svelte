@@ -13,8 +13,8 @@
   }
 
 	let playgroundSize:number = 800;
-	let snakePositionX:number = Math.round(playgroundSize/2);
-  let snakePositionY:number = Math.round(playgroundSize/2);
+	let snakePositionX:number = Math.round(playgroundSize/2)
+  let snakePositionY:number = Math.round(playgroundSize/2)
   let currentFoodPositionX:number = -99999;
   let currentFoodPositionY:number = -99999;
 	let currentSnakeDirection:direction = direction.Left;
@@ -27,8 +27,8 @@
   $: foodPosition = {x: currentFoodPositionX, y: currentFoodPositionY}
 
 	function generateFoodPosition() {
-		currentFoodPositionX = Math.floor(Math.random() * (playgroundSize - 24))
-    currentFoodPositionY = Math.floor(Math.random() * (playgroundSize - 24))
+		currentFoodPositionX = (Math.round(Math.random()*39))*20;
+    currentFoodPositionY = (Math.round(Math.random()*39))*20;
 	}
 
 	function resetSnakeAndHideFood() {
@@ -67,7 +67,7 @@
 	function startMove() {
 		gameOver = false;
 		gameStarted = true;
-		gameInterval = setInterval(move ,speed * 10);
+		gameInterval = setInterval(move , 100);
 	}
 
 
@@ -80,16 +80,16 @@
 		if (gameStarted) {
 			switch (currentSnakeDirection) {
 				case direction.Up:
-			snakePositionY = snakePositionY - 2
+			snakePositionY = snakePositionY - 20
 				break;
 				case direction.Down:
-			snakePositionY = snakePositionY + 2
+			snakePositionY = snakePositionY + 20
 				break;
 				case direction.Left:
-			snakePositionX = snakePositionX - 2
+			snakePositionX = snakePositionX - 20
 				break;
 				case direction.Right:
-			snakePositionX = snakePositionX + 2
+			snakePositionX = snakePositionX + 20
 				break;
 				default:
 					break;
@@ -98,7 +98,7 @@
 	}
 
 	function checkIfSnakeHitWall() {
-		if (snakePositionX < 0 || snakePositionX > 778 || snakePositionY < 0 || snakePositionY > 778) {
+		if (snakePositionX <= 0 || snakePositionX > 778 || snakePositionY <= 0 || snakePositionY > 778) {
 			gameStarted = false;
 			gameOver = true;
 			clearInterval(gameInterval);
@@ -134,7 +134,7 @@
 <svelte:window on:keydown={handleKeydown} />
 <div
 	style="height: {playgroundSize}px; width: {playgroundSize}px"
-  class="border-4 rounded-md relative border-black"
+  class="border-4 rounded-md relative border-black box-content"
 >
  <Snake {position} />
  <Food {foodPosition} />
@@ -149,4 +149,4 @@
 </div>
 
 
-
+ 
