@@ -5,67 +5,110 @@
   import Food from "./food.svelte";
 
   enum direction {
-	Left,
+	Left = 1,
 	Right,
 	Up,
 	Down,
+	Space
   }
 
-	let playgroundSize = 800;
-	let snakePositionX = Math.round(playgroundSize/2)
-  let snakePositionY = Math.round(playgroundSize/2)
+	let playgroundSize:number = 800;
+	let snakePositionX:number = Math.round(playgroundSize/2);
+  let snakePositionY:number = Math.round(playgroundSize/2);
+  let currentFoodPositionX:number = -99999;
+  let currentFoodPositionY:number = -99999;
 	let currentSnakeDirection:direction = direction.Left;
-  let currentFoodPositionX = Math.floor(Math.random() * 778);
-  let currentFoodPositionY = Math.floor(Math.random() * 778);
-	let gameStarted = false
-	let speed = 1
+	let gameStarted:boolean = false
+	let speed:number = 1
   let gameInterval;
-  let gameOver = false;
+  let gameOver:boolean = false;
 
   $: position = {x: snakePositionX, y: snakePositionY};
   $: foodPosition = {x: currentFoodPositionX, y: currentFoodPositionY}
 
+	function generateFoodPosition() {
+		currentFoodPositionX = Math.floor(Math.random() * (playgroundSize - 24))
+    currentFoodPositionY = Math.floor(Math.random() * (playgroundSize - 24))
+	}
+
+	function resetSnakeAndHideFood() {
+		snakePositionX = Math.round(playgroundSize/2)
+    snakePositionY = Math.round(playgroundSize/2)
+		currentFoodPositionX = -99999;
+  	currentFoodPositionY = -99999
+	}
+
 	function handleKeydown(event) {
-		parseDirection(event);
+		parseDirection(event)
+		gameEngine()
+	}
+
+	function gameEngine() {
 		if (!gameStarted) {
-      gameOver = false;
-			gameStarted = true;
-			gameInterval = setInterval(move ,speed * 5);
+			switch (gameOver) {
+				case true:
+					if (currentSnakeDirection === direction.Space) {
+						gameOver = false;
+						resetSnakeAndHideFood()
+					}
+					break;
+				case false:
+					if (currentSnakeDirection) {
+						startMove()
+						generateFoodPosition();
+					}
+					break;
+				default:
+					break;
+			}
 		}
 	}
 
-	function move() {
-		switch (currentSnakeDirection) {
-			case direction.Up:
-        snakePositionY = snakePositionY - 1
-			break;
-			case direction.Down:
-        snakePositionY = snakePositionY + 1
-			break;
-			case direction.Left:
-        snakePositionX = snakePositionX - 1
-			break;
-			case direction.Right:
-        snakePositionX = snakePositionX + 1
-			break;
-			default:
-				break;
-		}
+	function startMove() {
+		gameOver = false;
+		gameStarted = true;
+		gameInterval = setInterval(move ,speed * 10);
+	}
 
-		timeToEat() {
-			if (position.x) {
-				
+
+	function move() {
+		makeAStepWithSnake();
+		checkIfSnakeHitWall();
+	}
+
+	function makeAStepWithSnake() {
+		if (gameStarted) {
+			switch (currentSnakeDirection) {
+				case direction.Up:
+			snakePositionY = snakePositionY - 2
+				break;
+				case direction.Down:
+			snakePositionY = snakePositionY + 2
+				break;
+				case direction.Left:
+			snakePositionX = snakePositionX - 2
+				break;
+				case direction.Right:
+			snakePositionX = snakePositionX + 2
+				break;
+				default:
+					break;
 			}
 		}
+	}
 
-    if (snakePositionX < 0 || snakePositionX > 778 || snakePositionY < 0 || snakePositionY > 778) {
-      gameStarted = false;
-      gameOver = true;
-      clearInterval(gameInterval);
-    }
+	function checkIfSnakeHitWall() {
+		if (snakePositionX < 0 || snakePositionX > 778 || snakePositionY < 0 || snakePositionY > 778) {
+			gameStarted = false;
+			gameOver = true;
+			clearInterval(gameInterval);
+		}
 	}
 
 	function parseDirection(event) {
+		if (gameStarted && event.key === ' ') {
+			return;
+		}
 		switch (event.key) {
 			case 'ArrowUp':
 				currentSnakeDirection = direction.Up;
@@ -78,6 +121,9 @@
 			break;
 			case 'ArrowRight':
 				currentSnakeDirection = direction.Right;
+			break;
+			case ' ':
+				currentSnakeDirection = direction.Space;
 			break;
 			default:
 				break;
